@@ -88,6 +88,15 @@ namespace Bev.Instruments.OceanOptics.Usb2000
             return result;
         }
 
+        private double GetMinIntegrationTimeSec()
+        {
+            // long seabreeze_get_min_integration_time_microsec(int index, ref int errorCode);
+            int error = 0;
+            long intTimeMicrosec = SeaBreezeWrapper.seabreeze_get_min_integration_time_microsec(specIndex, ref error);
+            bool result = checkSeaBreezeError("seabreeze_get_min_integration_time_microsec", error);
+            return (double)intTimeMicrosec*1.0e-6;
+        }
+
         private bool OpenAndInitialize()
         {
             wavelengthsCache = null;

@@ -28,7 +28,7 @@ namespace Bev.Instruments.OceanOptics.Usb2000
         public double MinimumWavelength => wavelengthsCache[0];
         public double MaximumWavelength => wavelengthsCache[wavelengthsCache.Length - 1];
         public double SaturationLevel => 4000;
-        public double MinimumIntegrationTime => 0.003;
+        public double MinimumIntegrationTime => GetMinIntegrationTimeSec();
         public double MaximumIntegrationTime => 65.0;
 
         public double GetIntegrationTime() => integrationTimeSeconds; // there is no SeaBreeze call to read it back
