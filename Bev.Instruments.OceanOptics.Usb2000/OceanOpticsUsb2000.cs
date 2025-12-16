@@ -69,7 +69,8 @@ namespace Bev.Instruments.OceanOptics.Usb2000
             if (seconds < MinimumIntegrationTime) seconds = MinimumIntegrationTime;
             if (seconds > MaximumIntegrationTime) seconds = MaximumIntegrationTime;
             integrationTimeSeconds = seconds;
-            SetIntegrationTimeMilliseconds(seconds * 1000);
+            SetIntegrationTimeMilliseconds(seconds * 1000.0);
+            ReadSacrificialSpectrum(); // this seems to be necessarry for this type of spectrometers
         }
 
     }

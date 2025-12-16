@@ -106,6 +106,8 @@ namespace Bev.Instruments.OceanOptics.Usb2000
             return true;
         }
 
+        private void ReadSacrificialSpectrum() => GetIntensityData(); // after setting a new integration time
+
         // returns true if last operation was successful, false if last operation had an error
         private bool checkSeaBreezeError(string operation, int errorCode)
         {
