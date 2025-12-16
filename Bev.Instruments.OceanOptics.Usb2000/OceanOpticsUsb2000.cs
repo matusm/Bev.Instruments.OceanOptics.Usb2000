@@ -33,15 +33,13 @@ namespace Bev.Instruments.OceanOptics.Usb2000
         public double MinimumIntegrationTime => _minimumIntegrationTimeSeconds;
         public double MaximumIntegrationTime => 65.0; // this is just an estimate; SeaBreeze does not provide a call to read it
 
-        public double GetIntegrationTime() => _integrationTimeSeconds; // there is no SeaBreeze call to read it back
-
         public double[] GetIntensityData()
         {
             double[] result = null;
             int error = 0;
             double[] spec = new double[_nPixels];
             SeaBreezeWrapper.seabreeze_get_formatted_spectrum(_specIndex, ref error, ref spec[0], _nPixels);
-            if (checkSeaBreezeError("get_formatted_spectrum", error))
+            if (IfSeaBreezeSuccess("get_formatted_spectrum", error))
             {
                 // KLUDGE: Some spectrometers (e.g. HR4000) insert non-pixel data 
                 // into the first few pixels of the spectrum they report, which
@@ -62,8 +60,10 @@ namespace Bev.Instruments.OceanOptics.Usb2000
             if (seconds > MaximumIntegrationTime) seconds = MaximumIntegrationTime;
             _integrationTimeSeconds = seconds;
             SetIntegrationTimeMilliseconds(seconds * 1000.0);
-            ReadSacrificialSpectrum(); // this seems to be necessarry for this type of spectrometers
+            _ = GetIntensityData(); // sacrificial read to allow new integration time to take effect
         }
+
+        public double GetIntegrationTime() => _integrationTimeSeconds; // there is no SeaBreeze call to read it back
 
     }
 }

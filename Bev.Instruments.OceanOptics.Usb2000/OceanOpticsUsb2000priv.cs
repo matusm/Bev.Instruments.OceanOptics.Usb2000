@@ -7,52 +7,46 @@ namespace Bev.Instruments.OceanOptics.Usb2000
     {
         private string GetSpectrometerType()
         {
-            string result = string.Empty;
             byte[] slot = new byte[SeaBreezeWrapper.SLOT_LENGTH];
             int error = 0;
             SeaBreezeWrapper.seabreeze_get_model(_specIndex, ref error, ref slot[0], SeaBreezeWrapper.SLOT_LENGTH);
-            if (checkSeaBreezeError("get_spectrometer_type", error))
-                result = ByteToString(slot);
-            return result;
+            if (IfSeaBreezeSuccess("get_spectrometer_type", error))
+                return ByteToString(slot);
+            return string.Empty;
         }
 
         private string GetSerialNumber()
         {
-            string result = string.Empty;
             byte[] slot = new byte[SeaBreezeWrapper.SLOT_LENGTH];
             int error = 0;
             SeaBreezeWrapper.seabreeze_get_serial_number(_specIndex, ref error, ref slot[0], SeaBreezeWrapper.SLOT_LENGTH);
-            if (checkSeaBreezeError("get_serial_number", error))
-                result = ByteToString(slot);
-            return result;
+            if (IfSeaBreezeSuccess("get_serial_number", error))
+                return ByteToString(slot);
+            return string.Empty;
         }
 
         private string GetVersion()
         {
-            string result = string.Empty;
-            const int MAX_VERSION_LEN = 80;
-            byte[] version = new byte[MAX_VERSION_LEN];
+            byte[] version = new byte[SeaBreezeWrapper.MAX_VERSION_LEN];
             int error = 0;
             SeaBreezeWrapper.seabreeze_get_api_version_string(ref version[0], version.Length);
-            if (checkSeaBreezeError("get_api_version_string", error))
-                result = ByteToString(version);
-            return result;
+            if (IfSeaBreezeSuccess("get_api_version_string", error))
+                return ByteToString(version);
+            return string.Empty;
         }
 
-        private bool SetIntegrationTimeMilliseconds(double ms)
+        private void SetIntegrationTimeMilliseconds(double ms)
         {
-            bool result = false;
             int error = 0;
             SeaBreezeWrapper.seabreeze_set_integration_time_microsec(_specIndex, ref error, (long)(ms * 1000));
-            result = checkSeaBreezeError("set_integration_time_microsec", error);
-            return result;
+            _ = IfSeaBreezeSuccess("set_integration_time_microsec", error);
         }
 
         private double GetMinIntegrationTimeSec()
         {
             int error = 0;
             long intTimeMicrosec = SeaBreezeWrapper.seabreeze_get_min_integration_time_microsec(_specIndex, ref error);
-            bool result = checkSeaBreezeError("seabreeze_get_min_integration_time_microsec", error);
+            _ = IfSeaBreezeSuccess("seabreeze_get_min_integration_time_microsec", error);
             return (double)intTimeMicrosec * 1.0e-6;
         }
 
@@ -61,30 +55,31 @@ namespace Bev.Instruments.OceanOptics.Usb2000
             _wavelengthsCache = null;
             int error = 0;
             SeaBreezeWrapper.seabreeze_open_spectrometer(_specIndex, ref error);
-            if (!checkSeaBreezeError("open_spectrometer", error))
+            if (!IfSeaBreezeSuccess("open_spectrometer", error))
                 return false;
             _nPixels = SeaBreezeWrapper.seabreeze_get_formatted_spectrum_length(_specIndex, ref error);
-            if (!checkSeaBreezeError("get_formatted_spectrum_length", error))
+            if (!IfSeaBreezeSuccess("get_formatted_spectrum_length", error))
                 return false;
             double[] tmp = new double[_nPixels];
             SeaBreezeWrapper.seabreeze_get_wavelengths(_specIndex, ref error, ref tmp[0], _nPixels);
-            if (!checkSeaBreezeError("get_wavelengths", error))
+            if (!IfSeaBreezeSuccess("get_wavelengths", error))
                 return false;
             _wavelengthsCache = tmp;
             return true;
         }
 
-        private void ReadSacrificialSpectrum() => GetIntensityData(); // after setting a new integration time
-
         // returns true if last operation was successful, false if last operation had an error
-        private bool checkSeaBreezeError(string operation, int errorCode)
+        private bool IfSeaBreezeSuccess(string operation, int errorCode, bool debug = false)
         {
             if (errorCode == SeaBreezeWrapper.ERROR_SUCCESS)
                 return true;
-            byte[] buffer = new byte[64];
-            SeaBreezeWrapper.seabreeze_get_error_string(errorCode, ref buffer[0], 64);
-            string msg = ByteToString(buffer);
-            Console.WriteLine($"[SeaBreeze] error during {operation}: {msg}");
+            if (debug)
+            {
+                byte[] buffer = new byte[64];
+                SeaBreezeWrapper.seabreeze_get_error_string(errorCode, ref buffer[0], 64);
+                string msg = ByteToString(buffer);
+                Console.WriteLine($"[SeaBreeze] Debug: operation {operation} returned error code {errorCode}: {msg}");
+            }
             return false;
         }
 

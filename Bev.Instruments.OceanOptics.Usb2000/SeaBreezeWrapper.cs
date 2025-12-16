@@ -1,16 +1,16 @@
-﻿
-using System.Runtime.InteropServices;
+﻿using System.Runtime.InteropServices;
 
 namespace Bev.Instruments.OceanOptics.Usb2000
 {
     public partial class SeaBreezeWrapper
     {
-        public const int SLOT_LENGTH = 15;
         public const int ERROR_SUCCESS = 0;
+        public const int MAX_VERSION_LEN = 80;
+        public const int SLOT_LENGTH = 15;
 
         // NOTE: To Debug SeaBreeze.dll set the full absolute path to your debug build of SeaBreeze.dll
         //       For example: const string DLL = @"C:\Code\seabreeze-code\trunk\SeaBreeze\os-support\windows\VisualStudio2013\x64\Debug\SeaBreeze.dll";
-        const string DLL = @"C:\BEV_tools\SeaBreeze\SeaBreeze.dll";
+        private const string DLL = @"C:\BEV_tools\SeaBreeze\SeaBreeze.dll";
 
         [DllImport(DLL, CallingConvention = CallingConvention.Cdecl)] public static extern double seabreeze_read_double(int index, ref int errorCode, int slot_number);
         [DllImport(DLL, CallingConvention = CallingConvention.Cdecl)] public static extern double seabreeze_read_tec_temperature(int index, ref int errorCode);
@@ -47,7 +47,5 @@ namespace Bev.Instruments.OceanOptics.Usb2000
         [DllImport(DLL, CallingConvention = CallingConvention.Cdecl)] public static extern void seabreeze_set_tec_fan_enable(int index, ref int errorCode, int tec_fan_enable);
         [DllImport(DLL, CallingConvention = CallingConvention.Cdecl)] public static extern void seabreeze_set_tec_temperature(int index, ref int errorCode, double temperature_degrees_celsius);
         [DllImport(DLL, CallingConvention = CallingConvention.Cdecl)] public static extern void seabreeze_set_trigger_mode(int index, ref int errorCode, int mode);
-
     }
-
 }
