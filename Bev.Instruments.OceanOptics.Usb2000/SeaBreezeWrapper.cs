@@ -2,7 +2,7 @@
 
 namespace Bev.Instruments.OceanOptics.Usb2000
 {
-    public partial class SeaBreezeWrapper
+    public class SeaBreezeWrapper
     {
         public const int ERROR_SUCCESS = 0;
         public const int MAX_VERSION_LEN = 80;
