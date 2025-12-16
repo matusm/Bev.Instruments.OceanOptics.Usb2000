@@ -9,6 +9,7 @@ namespace Bev.Instruments.OceanOptics.Usb2000
         private readonly int specIndex;
         private double[] wavelengthsCache;
         private double integrationTimeSeconds;
+        private double minimumIntegrationTimeSeconds;
 
         public OceanOpticsUsb2000() : this(0) { } // for now, hardcode to use first enumerated spectrometer
 
@@ -17,6 +18,7 @@ namespace Bev.Instruments.OceanOptics.Usb2000
             this.specIndex = specIndex;
             if(!OpenAndInitialize())
                 throw new Exception("Failed to open and initialize Ocean Optics USB2000 spectrometer.");
+            minimumIntegrationTimeSeconds = GetMinIntegrationTimeSec();
             SetIntegrationTime(MinimumIntegrationTime);
         }
 
@@ -28,7 +30,7 @@ namespace Bev.Instruments.OceanOptics.Usb2000
         public double MinimumWavelength => wavelengthsCache[0];
         public double MaximumWavelength => wavelengthsCache[wavelengthsCache.Length - 1];
         public double SaturationLevel => 4000;
-        public double MinimumIntegrationTime => GetMinIntegrationTimeSec();
+        public double MinimumIntegrationTime => minimumIntegrationTimeSeconds;
         public double MaximumIntegrationTime => 65.0;
 
         public double GetIntegrationTime() => integrationTimeSeconds; // there is no SeaBreeze call to read it back
