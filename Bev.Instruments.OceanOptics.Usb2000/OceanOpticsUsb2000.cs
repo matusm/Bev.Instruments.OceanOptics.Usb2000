@@ -36,7 +36,6 @@ namespace Bev.Instruments.OceanOptics.Usb2000
         public double[] GetIntensityData()
         {
             double[] result = null;
-            mutex.WaitOne();
             try
             {
                 int error = 0;
@@ -61,7 +60,6 @@ namespace Bev.Instruments.OceanOptics.Usb2000
             }
             finally
             {
-                mutex.ReleaseMutex();
             }
             return result;
         }

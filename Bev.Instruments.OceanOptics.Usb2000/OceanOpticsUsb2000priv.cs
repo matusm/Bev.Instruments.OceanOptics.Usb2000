@@ -1,17 +1,13 @@
 ﻿using System;
 using System.Text;
-using System.Threading;
 
 namespace Bev.Instruments.OceanOptics.Usb2000
 {
     public partial class OceanOpticsUsb2000
     {
-        static Mutex mutex = new Mutex();
-
         private string GetSpectrometerType()
         {
             string result = string.Empty;
-            mutex.WaitOne();
             try
             {
                 byte[] slot = new byte[SeaBreezeWrapper.SLOT_LENGTH];
@@ -26,7 +22,6 @@ namespace Bev.Instruments.OceanOptics.Usb2000
             }
             finally
             {
-                mutex.ReleaseMutex();
             }
             return result;
         }
@@ -34,7 +29,6 @@ namespace Bev.Instruments.OceanOptics.Usb2000
         private string GetSerialNumber()
         {
             string result = string.Empty;
-            mutex.WaitOne();
             try
             {
                 byte[] slot = new byte[SeaBreezeWrapper.SLOT_LENGTH];
@@ -49,7 +43,6 @@ namespace Bev.Instruments.OceanOptics.Usb2000
             }
             finally
             {
-                mutex.ReleaseMutex();
             }
             return result;
         }
@@ -57,7 +50,6 @@ namespace Bev.Instruments.OceanOptics.Usb2000
         private string GetVersion()
         {
             string result = string.Empty;
-            mutex.WaitOne();
             const int MAX_VERSION_LEN = 80;
             try
             {
@@ -73,7 +65,6 @@ namespace Bev.Instruments.OceanOptics.Usb2000
             }
             finally
             {
-                mutex.ReleaseMutex();
             }
             return result;
         }
@@ -81,7 +72,6 @@ namespace Bev.Instruments.OceanOptics.Usb2000
         private bool SetIntegrationTimeMilliseconds(double ms)
         {
             bool result = false;
-            mutex.WaitOne();
             try
             {
                 int error = 0;
@@ -94,7 +84,6 @@ namespace Bev.Instruments.OceanOptics.Usb2000
             }
             finally
             {
-                mutex.ReleaseMutex();
             }
             return result;
         }
@@ -137,7 +126,6 @@ namespace Bev.Instruments.OceanOptics.Usb2000
             byte[] clean = Encoding.Convert(Encoding.GetEncoding("iso-8859-1"), Encoding.UTF8, buf);
             return Encoding.UTF8.GetString(clean, 0, len);
         }
-
 
     }
 }
